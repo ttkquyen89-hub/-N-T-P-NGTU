@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Học Tập Tương Tác - Cấu Tạo Nguyên Tử & Bảng Tuần Hoàn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f3e8ff 100%);
+        }
+        .electron-orbit {
+            animation: spin 16s linear infinite;
+            transform-origin: center;
+        }
+        .electron-orbit-reverse {
+            animation: spin-reverse 12s linear infinite;
+            transform-origin: center;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        .input-correct {
+            border-color: #10b981 !important;
+            background-color: #ecfdf5 !important;
+            color: #047857 !important;
+        }
+        .input-wrong {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-4 px-3 sm:px-6 lg:px-10 text-slate-800 text-lg">
+
+    <div class="w-full max-w-none mx-auto">
+        <!-- Header Card -->
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 border border-indigo-100">
+            <div class="bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 px-8 py-6 text-white flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-cyan-200 text-base font-bold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-atom fa-spin"></i> Khoa Học Tự Nhiên 7
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">PHIẾU HỌC TẬP & KIỂM TRA TƯƠNG TÁC</h1>
+                    <p class="text-indigo-100 text-base sm:text-lg mt-1">Chủ đề: Nguyên tử & Bảng tuần hoàn các nguyên tố hóa học</p>
+                </div>
+                <div class="bg-white/15 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/20 text-center min-w-[170px]">
+                    <span class="block text-sm uppercase tracking-wider text-indigo-100 font-bold">Điểm số</span>
+                    <span id="total-score" class="text-4xl font-black text-yellow-300">-- / 10</span>
+                </div>
+            </div>
+
+            <!-- Student Info & Exam Switcher -->
+            <div class="p-6 bg-slate-50 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-center gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full lg:w-2/3">
+                    <div class="relative">
+                        <label class="text-sm font-bold text-slate-600 uppercase mb-1 block">Họ và tên học sinh</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user-graduate absolute left-4 top-3.5 text-slate-400 text-lg"></i>
+                            <input type="text" id="student-name" placeholder="Nhập họ và tên..." class="w-full pl-11 pr-4 py-2.5 text-lg rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-slate-600 uppercase mb-1 block">Lớp</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-school absolute left-4 top-3.5 text-slate-400 text-lg"></i>
+                            <input type="text" id="student-class" placeholder="Ví dụ: 7A1..." class="w-full pl-11 pr-4 py-2.5 text-lg rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Switch De 1 / De 2 -->
+                <div class="flex items-center gap-2 bg-slate-200 p-2 rounded-2xl w-full lg:w-auto justify-center">
+                    <button onclick="switchExam(1)" id="btn-de-1" class="flex-1 lg:flex-initial px-6 py-3 rounded-xl font-bold text-base transition-all shadow-sm bg-indigo-600 text-white">
+                        <i class="fa-solid fa-file-lines mr-1"></i> ĐỀ SỐ 1
+                    </button>
+                    <button onclick="switchExam(2)" id="btn-de-2" class="flex-1 lg:flex-initial px-6 py-3 rounded-xl font-bold text-base transition-all text-slate-700 hover:bg-slate-300">
+                        <i class="fa-solid fa-file-lines mr-1"></i> ĐỀ SỐ 2
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Worksheet Content -->
+        <div class="space-y-8">
+
+            <!-- CÂU 1: ĐIỀN KHUYẾT -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 sm:p-8 border border-slate-100">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <span class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-2xl shadow-inner">1</span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Hoàn thành phát biểu (3.0 điểm)</h2>
+                            <p class="text-sm sm:text-base text-slate-500">Tự gõ từ hoặc cụm từ thích hợp vào chỗ trống</p>
+                        </div>
+                    </div>
+                    <span id="badge-q1" class="hidden px-3 py-1 rounded-full text-sm font-bold"></span>
+                </div>
+
+                <!-- Nội dung Câu 1 - Đề 1 -->
+                <div id="q1-de1" class="space-y-6 text-xl sm:text-2xl leading-relaxed bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
+                    <p>
+                        <strong class="text-indigo-600">a.</strong> Hạt nhân nguyên tử được tạo bởi hạt 
+                        <input type="text" id="d1-q1-a1" placeholder="Nhập tên hạt..." class="mx-1 px-4 py-1.5 w-48 sm:w-56 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">
+                        và hạt 
+                        <input type="text" id="d1-q1-a2" placeholder="Nhập tên hạt..." class="mx-1 px-4 py-1.5 w-48 sm:w-56 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">.
+                    </p>
+                    <p>
+                        <strong class="text-indigo-600">b.</strong> Trong bảng tuần hoàn, các nguyên tố được sắp xếp theo chiều tăng dần 
+                        <input type="text" id="d1-q1-b1" placeholder="Nhập cụm từ..." class="mx-1 px-4 py-1.5 w-64 sm:w-80 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">
+                        của nguyên tử.
+                    </p>
+                </div>
+
+                <!-- Nội dung Câu 1 - Đề 2 -->
+                <div id="q1-de2" class="hidden space-y-6 text-xl sm:text-2xl leading-relaxed bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
+                    <p>
+                        <strong class="text-indigo-600">a.</strong> Các loại hạt cấu tạo nên nguyên tử là hạt 
+                        <input type="text" id="d2-q1-a1" placeholder="Nhập tên hạt..." class="mx-1 px-4 py-1.5 w-44 sm:w-52 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">, hạt 
+                        <input type="text" id="d2-q1-a2" placeholder="Nhập tên hạt..." class="mx-1 px-4 py-1.5 w-44 sm:w-52 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">
+                        và hạt 
+                        <input type="text" id="d2-q1-a3" placeholder="Nhập tên hạt..." class="mx-1 px-4 py-1.5 w-44 sm:w-52 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">.
+                    </p>
+                    <p>
+                        <strong class="text-indigo-600">b.</strong> Trong bảng tuần hoàn, các nguyên tố có số lớp electron bằng nhau sẽ được xếp thành cùng một 
+                        <input type="text" id="d2-q1-b1" placeholder="Nhập từ..." class="mx-1 px-4 py-1.5 w-48 sm:w-56 text-center border-2 border-indigo-200 rounded-xl bg-white font-bold text-indigo-700 focus:outline-none focus:border-indigo-500">.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CÂU 2: KÝ HIỆU HÓA HỌC -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 sm:p-8 border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                    <div class="flex items-center gap-4">
+                        <span class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-black text-2xl shadow-inner">2</span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Viết ký hiệu hóa học của các nguyên tố (3.0 điểm)</h2>
+                            <p class="text-sm sm:text-base text-slate-500">Chú ý viết hoa chữ cái đầu tiên, viết thường chữ cái thứ hai (nếu có)</p>
+                        </div>
+                    </div>
+                    <button onclick="randomizeElementsQ2()" class="self-start sm:self-auto text-sm sm:text-base bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2.5 rounded-xl border border-blue-200 transition-all">
+                        <i class="fa-solid fa-shuffle mr-1"></i> Đổi nguyên tố ngẫu nhiên
+                    </button>
+                </div>
+
+                <div id="q2-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <!-- Sẽ được render động bằng JS -->
+                </div>
+            </div>
+
+            <!-- CÂU 3: MÔ HÌNH NGUYÊN TỬ TƯƠNG TÁC (THAY ĐỔI ĐƯỢC CẤU TẠO) -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 sm:p-8 border border-slate-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-4">
+                        <span class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center font-black text-2xl shadow-inner">3</span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Khám phá & Phân tích Mô hình Nguyên tử (4.0 điểm)</h2>
+                            <p class="text-sm sm:text-base text-slate-500">Quan sát số hạt electron / điện tích hạt nhân hoặc <strong class="text-purple-600">thay đổi cấu tạo nguyên tử</strong> để điền vào bảng</p>
+                        </div>
+                    </div>
+
+                    <!-- Bộ công cụ thay đổi cấu tạo nguyên tử -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button onclick="randomizeAtoms()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm sm:text-base shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Đổi sang cặp nguyên tử khác
+                        </button>
+                        <button onclick="resetDefaultAtoms()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm sm:text-base transition-all">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Mặc định theo đề
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Khu vực hiển thị và tương tác với 2 mô hình nguyên tử -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Nguyên tử 1 -->
+                    <div class="bg-gradient-to-b from-slate-50 to-indigo-50/40 rounded-2xl p-6 border border-indigo-100 flex flex-col items-center relative">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span id="atom1-label" class="px-4 py-1.5 bg-indigo-600 text-white font-black rounded-xl text-base sm:text-lg">Nguyên tử C</span>
+                            <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-slate-600 bg-white px-3 py-1.5 rounded-xl border shadow-sm">
+                                <span>Thay đổi Z (1-20):</span>
+                                <button onclick="adjustAtomZ(0, -1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-minus"></i></button>
+                                <span id="atom1-z-display" class="w-8 text-center font-black text-indigo-700 text-lg">8</span>
+                                <button onclick="adjustAtomZ(0, 1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Bảng vẽ SVG Mô hình Bohr 1 -->
+                        <div id="svg-atom-1" class="w-72 h-72 flex items-center justify-center my-2"></div>
+
+                        <div class="text-sm sm:text-base text-slate-600 text-center bg-white/80 px-4 py-2 rounded-full border border-slate-200">
+                            <span class="inline-block w-3 h-3 rounded-full bg-rose-500 mr-1 align-middle"></span> Hạt nhân (+Z)
+                            <span class="inline-block w-3 h-3 rounded-full bg-blue-600 ml-3 mr-1 align-middle"></span> Hạt electron (<span id="atom1-config-hint" class="font-bold text-slate-800"></span>)
+                        </div>
+                    </div>
+
+                    <!-- Nguyên tử 2 -->
+                    <div class="bg-gradient-to-b from-slate-50 to-purple-50/40 rounded-2xl p-6 border border-purple-100 flex flex-col items-center relative">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span id="atom2-label" class="px-4 py-1.5 bg-purple-600 text-white font-black rounded-xl text-base sm:text-lg">Nguyên tử D</span>
+                            <div class="flex items-center gap-2 text-sm sm:text-base font-bold text-slate-600 bg-white px-3 py-1.5 rounded-xl border shadow-sm">
+                                <span>Thay đổi Z (1-20):</span>
+                                <button onclick="adjustAtomZ(1, -1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-minus"></i></button>
+                                <span id="atom2-z-display" class="w-8 text-center font-black text-purple-700 text-lg">15</span>
+                                <button onclick="adjustAtomZ(1, 1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Bảng vẽ SVG Mô hình Bohr 2 -->
+                        <div id="svg-atom-2" class="w-72 h-72 flex items-center justify-center my-2"></div>
+
+                        <div class="text-sm sm:text-base text-slate-600 text-center bg-white/80 px-4 py-2 rounded-full border border-slate-200">
+                            <span class="inline-block w-3 h-3 rounded-full bg-rose-500 mr-1 align-middle"></span> Hạt nhân (+Z)
+                            <span class="inline-block w-3 h-3 rounded-full bg-blue-600 ml-3 mr-1 align-middle"></span> Hạt electron (<span id="atom2-config-hint" class="font-bold text-slate-800"></span>)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bảng điền thông tin Câu 3 -->
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800 text-white text-lg sm:text-xl">
+                                <th class="py-4 px-6 font-bold w-2/5">Thông tin cần xác định</th>
+                                <th id="th-atom-1" class="py-4 px-6 font-bold text-center w-3/10 bg-indigo-900/50">Nguyên tử C</th>
+                                <th id="th-atom-2" class="py-4 px-6 font-bold text-center w-3/10 bg-purple-900/50">Nguyên tử D</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-lg sm:text-xl">
+                            <!-- Hàng 1: Số hiệu nguyên tử -->
+                            <tr class="hover:bg-slate-50/80">
+                                <td class="py-4 px-6 font-bold text-slate-700">
+                                    1. Số hiệu nguyên tử (Z)
+                                    <span class="block text-sm font-normal text-slate-500 mt-0.5">Bằng số đơn vị điện tích hạt nhân (= số p = số e)</span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="number" id="ans-atom1-z" placeholder="Nhập số..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold focus:border-indigo-500 outline-none">
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="number" id="ans-atom2-z" placeholder="Nhập số..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold focus:border-purple-500 outline-none">
+                                </td>
+                            </tr>
+                            <!-- Hàng 2: STT ô nguyên tố -->
+                            <tr class="hover:bg-slate-50/80">
+                                <td class="py-4 px-6 font-bold text-slate-700">
+                                    2. Số thứ tự ô nguyên tố
+                                    <span class="block text-sm font-normal text-slate-500 mt-0.5">Vị trí ô trong bảng tuần hoàn</span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="text" id="ans-atom1-box" placeholder="Tự nhập..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold focus:border-indigo-500 outline-none">
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="text" id="ans-atom2-box" placeholder="Tự nhập..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold focus:border-purple-500 outline-none">
+                                </td>
+                            </tr>
+                            <!-- Hàng 3: Chu kì -->
+                            <tr class="hover:bg-slate-50/80">
+                                <td class="py-4 px-6 font-bold text-slate-700">
+                                    3. Chu kì
+                                    <span class="block text-sm font-normal text-slate-500 mt-0.5">Số thứ tự chu kì (= số lớp electron)</span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="text" id="ans-atom1-period" placeholder="Nhập chu kì..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold focus:border-indigo-500 outline-none bg-white">
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="text" id="ans-atom2-period" placeholder="Nhập chu kì..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold focus:border-purple-500 outline-none bg-white">
+                                </td>
+                            </tr>
+                            <!-- Hàng 4: Nhóm -->
+                            <tr class="hover:bg-slate-50/80">
+                                <td class="py-4 px-6 font-bold text-slate-700">
+                                    4. Nhóm (VD: IA, IIA, VIIA...)
+                                    <span class="block text-sm font-normal text-slate-500 mt-0.5">Dựa vào số electron lớp ngoài cùng</span>
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="text" id="ans-atom1-group" placeholder="Nhập nhóm..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold uppercase focus:border-indigo-500 outline-none bg-white">
+                                </td>
+                                <td class="py-4 px-6 text-center">
+                                    <input type="text" id="ans-atom2-group" placeholder="Nhập nhóm..." class="w-full max-w-[180px] text-center py-2.5 px-4 text-xl rounded-xl border-2 border-slate-200 font-bold uppercase focus:border-purple-500 outline-none bg-white">
+                                </td>
+                            </tr>
+                            <!-- Hàng 5 (Bonus tự khám phá): Tên/Kí hiệu nguyên tố -->
+                            <tr class="bg-amber-50/40">
+                                <td class="py-4 px-6 font-bold text-amber-800 text-base sm:text-lg">
+                                    <i class="fa-solid fa-star text-amber-500 mr-1"></i> Nhận diện nguyên tố (Sau khi chấm điểm)
+                                </td>
+                                <td id="reveal-atom-1" class="py-4 px-6 text-center font-extrabold text-indigo-700 text-lg sm:text-xl">?</td>
+                                <td id="reveal-atom-2" class="py-4 px-6 text-center font-extrabold text-purple-700 text-lg sm:text-xl">?</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 pb-10">
+                <button onclick="gradeWorksheet()" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xl shadow-lg shadow-emerald-500/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> CHẤM ĐIỂM & KIỂM TRA ĐÁP ÁN
+                </button>
+                <button onclick="showSolutions()" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key"></i> Điền Đáp Án Mẫu
+                </button>
+                <button onclick="resetWorksheet()" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-lg border border-slate-300 shadow-sm transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-rotate-right"></i> Làm Lại
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // CƠ SỞ DỮ LIỆU 20 NGUYÊN TỐ ĐẦU TIÊN TRONG BẢNG TUẦN HOÀN
+        const ELEMENTS_DB = [
+            { z: 1, symbol: "H", name: "Hydrogen", shells: [1], period: 1, group: "IA" },
+            { z: 2, symbol: "He", name: "Helium", shells: [2], period: 1, group: "VIIIA" },
+            { z: 3, symbol: "Li", name: "Lithium", shells: [2, 1], period: 2, group: "IA" },
+            { z: 4, symbol: "Be", name: "Beryllium", shells: [2, 2], period: 2, group: "IIA" },
+            { z: 5, symbol: "B", name: "Boron", shells: [2, 3], period: 2, group: "IIIA" },
+            { z: 6, symbol: "C", name: "Carbon", shells: [2, 4], period: 2, group: "IVA" },
+            { z: 7, symbol: "N", name: "Nitrogen", shells: [2, 5], period: 2, group: "VA" },
+            { z: 8, symbol: "O", name: "Oxygen", shells: [2, 6], period: 2, group: "VIA" },
+            { z: 9, symbol: "F", name: "Fluorine", shells: [2, 7], period: 2, group: "VIIA" },
+            { z: 10, symbol: "Ne", name: "Neon", shells: [2, 8], period: 2, group: "VIIIA" },
+            { z: 11, symbol: "Na", name: "Sodium", shells: [2, 8, 1], period: 3, group: "IA" },
+            { z: 12, symbol: "Mg", name: "Magnesium", shells: [2, 8, 2], period: 3, group: "IIA" },
+            { z: 13, symbol: "Al", name: "Aluminium", shells: [2, 8, 3], period: 3, group: "IIIA" },
+            { z: 14, symbol: "Si", name: "Silicon", shells: [2, 8, 4], period: 3, group: "IVA" },
+            { z: 15, symbol: "P", name: "Phosphorus", shells: [2, 8, 5], period: 3, group: "VA" },
+            { z: 16, symbol: "S", name: "Sulfur", shells: [2, 8, 6], period: 3, group: "VIA" },
+            { z: 17, symbol: "Cl", name: "Chlorine", shells: [2, 8, 7], period: 3, group: "VIIA" },
+            { z: 18, symbol: "Ar", name: "Argon", shells: [2, 8, 8], period: 3, group: "VIIIA" },
+            { z: 19, symbol: "K", name: "Potassium", shells: [2, 8, 8, 1], period: 4, group: "IA" },
+            { z: 20, symbol: "Ca", name: "Calcium", shells: [2, 8, 8, 2], period: 4, group: "IIA" }
+        ];
+
+        // Trạng thái hiện tại của bài kiểm tra
+        let currentExam = 1; // 1 hoặc 2
+        let currentQ2Elements = []; // 4 nguyên tố đang hỏi ở Câu 2
+        let currentAtomsQ3 = [8, 15]; // Z của 2 nguyên tử ở Câu 3 (Mặc định Đề 1: C(+8) và D(+15))
+        let atomLabels = ["C", "D"];
+
+        // Khởi tạo khi tải trang
+        window.addEventListener('DOMContentLoaded', () => {
+            switchExam(1);
+        });
+
+        // Chuyển đổi giữa Đề 1 và Đề 2 (giống file PDF gốc)
+        function switchExam(examNumber) {
+            currentExam = examNumber;
+            const btn1 = document.getElementById('btn-de-1');
+            const btn2 = document.getElementById('btn-de-2');
+            const q1De1 = document.getElementById('q1-de1');
+            const q1De2 = document.getElementById('q1-de2');
+
+            if (examNumber === 1) {
+                btn1.className = "flex-1 lg:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all shadow-sm bg-indigo-600 text-white";
+                btn2.className = "flex-1 lg:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all text-slate-700 hover:bg-slate-300";
+                q1De1.classList.remove('hidden');
+                q1De2.classList.add('hidden');
+
+                // Câu 2 Đề 1 gốc: Hydrogen, Potassium, Calcium, Nitrogen
+                currentQ2Elements = [
+                    getElementByZ(1),  // Hydrogen
+                    getElementByZ(19), // Potassium
+                    getElementByZ(20), // Calcium
+                    getElementByZ(7)   // Nitrogen
+                ];
+                atomLabels = ["C", "D"];
+                currentAtomsQ3 = [8, 15]; // +8 (Oxygen) và +15 (Phosphorus) như hình vẽ Đề 1
+            } else {
+                btn2.className = "flex-1 lg:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all shadow-sm bg-indigo-600 text-white";
+                btn1.className = "flex-1 lg:flex-initial px-5 py-2 rounded-xl font-bold text-sm transition-all text-slate-700 hover:bg-slate-300";
+                q1De2.classList.remove('hidden');
+                q1De1.classList.add('hidden');
+
+                // Câu 2 Đề 2 gốc: Oxygen, Sulfur, Aluminium, Lithium
+                currentQ2Elements = [
+                    getElementByZ(8),  // Oxygen
+                    getElementByZ(16), // Sulfur
+                    getElementByZ(13), // Aluminium
+                    getElementByZ(3)   // Lithium
+                ];
+                atomLabels = ["A", "B"];
+                currentAtomsQ3 = [7, 18]; // +7 (Nitrogen) và +18 (Argon) như hình vẽ Đề 2
+            }
+
+            renderQ2();
+            renderAllAtomsQ3();
+            clearGradesFormatting();
+        }
+
+        function getElementByZ(z) {
+            return ELEMENTS_DB.find(el => el.z === z);
+        }
+
+        // Render danh sách 4 nguyên tố ở Câu 2
+        function renderQ2() {
+            const container = document.getElementById('q2-container');
+            container.innerHTML = '';
+            currentQ2Elements.forEach((el, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 p-5 rounded-2xl border border-slate-200 flex items-center justify-between gap-3";
+                card.innerHTML = `
+                    <div>
+                        <span class="text-sm font-bold text-slate-400 block">Nguyên tố #${index + 1}</span>
+                        <span class="font-extrabold text-slate-800 text-xl sm:text-2xl">${el.name}</span>
+                    </div>
+                    <input type="text" id="q2-ans-${index}" maxlength="3" placeholder="Kí hiệu..." 
+                        class="w-28 text-center py-2.5 px-3 rounded-xl border-2 border-slate-300 font-black text-xl sm:text-2xl text-blue-700 focus:border-blue-500 outline-none bg-white">
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Đổi ngẫu nhiên 4 nguyên tố ở Câu 2
+        function randomizeElementsQ2() {
+            const shuffled = [...ELEMENTS_DB].sort(() => 0.5 - Math.random());
+            currentQ2Elements = shuffled.slice(0, 4);
+            renderQ2();
+            clearGradesFormatting();
+        }
+
+        // Vẽ mô hình cấu tạo nguyên tử Bohr bằng SVG
+        function createBohrAtomSVG(z) {
+            const element = getElementByZ(z);
+            const shells = element.shells;
+            const size = 250;
+            const center = size / 2;
+            const radii = [38, 62, 86, 110]; // Bán kính cho tối đa 4 lớp e
+
+            let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="overflow-visible">`;
+
+            // Vẽ các vòng lớp electron
+            shells.forEach((eCount, sIndex) => {
+                const r = radii[sIndex];
+                svgContent += `<circle cx="${center}" cy="${center}" r="${r}" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 3" />`;
+            });
+
+            // Vẽ các hạt electron trên từng lớp
+            shells.forEach((eCount, sIndex) => {
+                const r = radii[sIndex];
+                const orbitClass = sIndex % 2 === 0 ? 'electron-orbit' : 'electron-orbit-reverse';
+                svgContent += `<g class="${orbitClass}">`;
+                for (let i = 0; i < eCount; i++) {
+                    const angle = (2 * Math.PI * i) / eCount - Math.PI / 2;
+                    const ex = center + r * Math.cos(angle);
+                    const ey = center + r * Math.sin(angle);
+                    svgContent += `
+                        <circle cx="${ex}" cy="${ey}" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="1.5" />
+                        <text x="${ex}" y="${ey + 3}" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="bold">-</text>
+                    `;
+                }
+                svgContent += `</g>`;
+            });
+
+            // Vẽ hạt nhân ở tâm
+            svgContent += `
+                <circle cx="${center}" cy="${center}" r="22" fill="url(#nucleusGrad)" stroke="#fff" stroke-width="2" class="shadow-md" />
+                <defs>
+                    <radialGradient id="nucleusGrad" cx="35%" cy="35%" r="65%">
+                        <stop offset="0%" stop-color="#fb7185" />
+                        <stop offset="100%" stop-color="#e11d48" />
+                    </radialGradient>
+                </defs>
+                <text x="${center}" y="${center + 5}" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="900">+${z}</text>
+            `;
+
+            svgContent += `</svg>`;
+            return svgContent;
+        }
+
+        // Render cả 2 nguyên tử ở Câu 3
+        function renderAllAtomsQ3() {
+            const el1 = getElementByZ(currentAtomsQ3[0]);
+            const el2 = getElementByZ(currentAtomsQ3[1]);
+
+            document.getElementById('atom1-label').textContent = `Nguyên tử ${atomLabels[0]}`;
+            document.getElementById('atom2-label').textContent = `Nguyên tử ${atomLabels[1]}`;
+            document.getElementById('th-atom-1').textContent = `Nguyên tử ${atomLabels[0]}`;
+            document.getElementById('th-atom-2').textContent = `Nguyên tử ${atomLabels[1]}`;
+
+            document.getElementById('atom1-z-display').textContent = el1.z;
+            document.getElementById('atom2-z-display').textContent = el2.z;
+
+            document.getElementById('atom1-config-hint').textContent = `Lớp e: ${el1.shells.join(' - ')}`;
+            document.getElementById('atom2-config-hint').textContent = `Lớp e: ${el2.shells.join(' - ')}`;
+
+            document.getElementById('svg-atom-1').innerHTML = createBohrAtomSVG(el1.z);
+            document.getElementById('svg-atom-2').innerHTML = createBohrAtomSVG(el2.z);
+
+            document.getElementById('reveal-atom-1').textContent = '?';
+            document.getElementById('reveal-atom-2').textContent = '?';
+        }
+
+        // Tăng/giảm số hiệu nguyên tử Z của mô hình Câu 3 trực tiếp
+        function adjustAtomZ(atomIndex, delta) {
+            let newZ = currentAtomsQ3[atomIndex] + delta;
+            if (newZ < 1) newZ = 20;
+            if (newZ > 20) newZ = 1;
+            currentAtomsQ3[atomIndex] = newZ;
+            renderAllAtomsQ3();
+            clearQ3Inputs();
+        }
+
+        // Đổi ngẫu nhiên cặp nguyên tử khác cho Câu 3
+        function randomizeAtoms() {
+            let z1 = Math.floor(Math.random() * 20) + 1;
+            let z2 = Math.floor(Math.random() * 20) + 1;
+            while (z2 === z1) {
+                z2 = Math.floor(Math.random() * 20) + 1;
+            }
+            currentAtomsQ3 = [z1, z2];
+            renderAllAtomsQ3();
+            clearQ3Inputs();
+        }
+
+        // Khôi phục cặp nguyên tử mặc định của đề đang chọn
+        function resetDefaultAtoms() {
+            currentAtomsQ3 = currentExam === 1 ? [8, 15] : [7, 18];
+            renderAllAtomsQ3();
+            clearQ3Inputs();
+        }
+
+        function clearQ3Inputs() {
+            const ids = [
+                'ans-atom1-z', 'ans-atom2-z',
+                'ans-atom1-box', 'ans-atom2-box',
+                'ans-atom1-period', 'ans-atom2-period',
+                'ans-atom1-group', 'ans-atom2-group'
+            ];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                el.value = '';
+                el.classList.remove('input-correct', 'input-wrong');
+            });
+            document.getElementById('total-score').textContent = '-- / 10';
+        }
+
+        function markField(element, isCorrect) {
+            element.classList.remove('input-correct', 'input-wrong');
+            if (isCorrect) {
+                element.classList.add('input-correct');
+            } else {
+                element.classList.add('input-wrong');
+            }
+        }
+
+        // Chuẩn hóa chuỗi người dùng tự nhập (chữ thường, cắt khoảng trắng thừa)
+        function normalizeText(str) {
+            return str.trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        // Nhận diện tên hạt nguyên tử (chấp nhận cả kí hiệu p, n, e)
+        function normalizeParticle(val) {
+            const v = normalizeText(val);
+            if (v === 'proton' || v === 'p') return 'proton';
+            if (v === 'neutron' || v === 'n' || v === 'notron' || v === 'nơtron') return 'neutron';
+            if (v === 'electron' || v === 'e') return 'electron';
+            return v;
+        }
+
+        // Chuẩn hóa tên nhóm (chấp nhận cả "VIIA", "VII A", hoặc "VII")
+        function normalizeGroup(val) {
+            let v = val.trim().toUpperCase().replace(/\s+/g, '');
+            const romanNums = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+            if (romanNums.includes(v)) {
+                return v + 'A';
+            }
+            return v;
+        }
+
+        // CHẤM ĐIỂM TOÀN BỘ PHIẾU HỌC TẬP
+        function gradeWorksheet() {
+            let score = 0;
+
+            // 1. Chấm Câu 1 (3.0 điểm)
+            if (currentExam === 1) {
+                const a1 = document.getElementById('d1-q1-a1');
+                const a2 = document.getElementById('d1-q1-a2');
+                const b1 = document.getElementById('d1-q1-b1');
+
+                const p1 = normalizeParticle(a1.value);
+                const p2 = normalizeParticle(a2.value);
+
+                // a1 và a2 phải là proton và neutron (không phân biệt thứ tự)
+                const isA1Correct = (p1 === 'proton' || p1 === 'neutron') && p1 !== p2;
+                const isA2Correct = (p2 === 'proton' || p2 === 'neutron') && p1 !== p2;
+
+                if (isA1Correct) score += 1.0;
+                if (isA2Correct) score += 1.0;
+                markField(a1, isA1Correct);
+                markField(a2, isA2Correct);
+
+                const valB1 = normalizeText(b1.value);
+                const isB1Correct = valB1 === 'điện tích hạt nhân' || valB1 === 'dien tich hat nhan';
+                if (isB1Correct) score += 1.0;
+                markField(b1, isB1Correct);
+            } else {
+                const a1 = document.getElementById('d2-q1-a1');
+                const a2 = document.getElementById('d2-q1-a2');
+                const a3 = document.getElementById('d2-q1-a3');
+                const b1 = document.getElementById('d2-q1-b1');
+
+                const validParticles = ['proton', 'neutron', 'electron'];
+                const p1 = normalizeParticle(a1.value);
+                const p2 = normalizeParticle(a2.value);
+                const p3 = normalizeParticle(a3.value);
+                const chosen = [p1, p2, p3];
+
+                const c1 = validParticles.includes(p1) && chosen.indexOf(p1) === 0;
+                const c2 = validParticles.includes(p2) && chosen.indexOf(p2) === 1;
+                const c3 = validParticles.includes(p3) && chosen.indexOf(p3) === 2;
+
+                if (c1) score += 0.75;
+                if (c2) score += 0.75;
+                if (c3) score += 0.75;
+                markField(a1, c1);
+                markField(a2, c2);
+                markField(a3, c3);
+
+                const valB1 = normalizeText(b1.value);
+                const isB1Correct = valB1 === 'chu kì' || valB1 === 'chu kỳ' || valB1 === 'chu ki' || valB1 === 'chu ky';
+                if (isB1Correct) score += 0.75;
+                markField(b1, isB1Correct);
+            }
+
+            // 2. Chấm Câu 2 (3.0 điểm - mỗi nguyên tố 0.75 điểm)
+            currentQ2Elements.forEach((el, idx) => {
+                const inp = document.getElementById(`q2-ans-${idx}`);
+                const isCorrect = inp.value.trim() === el.symbol;
+                if (isCorrect) score += 0.75;
+                markField(inp, isCorrect);
+            });
+
+            // 3. Chấm Câu 3 (4.0 điểm - 8 ô, mỗi ô 0.5 điểm)
+            const el1 = getElementByZ(currentAtomsQ3[0]);
+            const el2 = getElementByZ(currentAtomsQ3[1]);
+
+            const checks = [
+                { id: 'ans-atom1-z', expected: String(el1.z), isGroup: false },
+                { id: 'ans-atom2-z', expected: String(el2.z), isGroup: false },
+                { id: 'ans-atom1-box', expected: String(el1.z), isGroup: false },
+                { id: 'ans-atom2-box', expected: String(el2.z), isGroup: false },
+                { id: 'ans-atom1-period', expected: String(el1.period), isGroup: false },
+                { id: 'ans-atom2-period', expected: String(el2.period), isGroup: false },
+                { id: 'ans-atom1-group', expected: el1.group, isGroup: true },
+                { id: 'ans-atom2-group', expected: el2.group, isGroup: true }
+            ];
+
+            checks.forEach(item => {
+                const field = document.getElementById(item.id);
+                const userVal = item.isGroup ? normalizeGroup(field.value) : field.value.trim();
+                const isCorrect = userVal === item.expected;
+                if (isCorrect) score += 0.5;
+                markField(field, isCorrect);
+            });
+
+            // Hiển thị tên nguyên tố ở hàng cuối Câu 3
+            document.getElementById('reveal-atom-1').textContent = `${el1.name} (${el1.symbol})`;
+            document.getElementById('reveal-atom-2').textContent = `${el2.name} (${el2.symbol})`;
+
+            // Cập nhật điểm tổng
+            const formattedScore = Number.isInteger(score) ? score : score.toFixed(2);
+            document.getElementById('total-score').textContent = `${formattedScore} / 10`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Điền đáp án mẫu
+        function showSolutions() {
+            if (currentExam === 1) {
+                document.getElementById('d1-q1-a1').value = 'proton';
+                document.getElementById('d1-q1-a2').value = 'neutron';
+                document.getElementById('d1-q1-b1').value = 'điện tích hạt nhân';
+            } else {
+                document.getElementById('d2-q1-a1').value = 'proton';
+                document.getElementById('d2-q1-a2').value = 'neutron';
+                document.getElementById('d2-q1-a3').value = 'electron';
+                document.getElementById('d2-q1-b1').value = 'chu kì';
+            }
+
+            currentQ2Elements.forEach((el, idx) => {
+                document.getElementById(`q2-ans-${idx}`).value = el.symbol;
+            });
+
+            const el1 = getElementByZ(currentAtomsQ3[0]);
+            const el2 = getElementByZ(currentAtomsQ3[1]);
+
+            document.getElementById('ans-atom1-z').value = el1.z;
+            document.getElementById('ans-atom2-z').value = el2.z;
+            document.getElementById('ans-atom1-box').value = el1.z;
+            document.getElementById('ans-atom2-box').value = el2.z;
+            document.getElementById('ans-atom1-period').value = el1.period;
+            document.getElementById('ans-atom2-period').value = el2.period;
+            document.getElementById('ans-atom1-group').value = el1.group;
+            document.getElementById('ans-atom2-group').value = el2.group;
+
+            gradeWorksheet();
+        }
+
+        // Xóa định dạng đúng/sai
+        function clearGradesFormatting() {
+            document.querySelectorAll('input, select').forEach(el => {
+                el.classList.remove('input-correct', 'input-wrong');
+            });
+            document.getElementById('total-score').textContent = '-- / 10';
+        }
+
+        // Làm lại từ đầu
+        function resetWorksheet() {
+            document.querySelectorAll('#q1-de1 input, #q1-de2 input').forEach(i => i.value = '');
+            document.querySelectorAll('#q2-container input').forEach(i => i.value = '');
+            clearQ3Inputs();
+            clearGradesFormatting();
+            document.getElementById('reveal-atom-1').textContent = '?';
+            document.getElementById('reveal-atom-2').textContent = '?';
+        }
+    </script>
+</body>
+</html>
